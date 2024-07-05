@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Inicio - ReviewFlix{% endblock %}
+{% block content %}
+{% load static %}
+<section class="bajada">
+    <div class="bajada-content">
+        <h1 class="title text-center">Bienvenidos a ReviewFlix!</h1>
+        <p>El sitio de reseñas de películas que estabas buscando.</p>
+    </div>
+</section>
+
+<div class="container-main-aside">
+    <main>
+        <div class="container-home">
+            <h2>Películas agregadas recientemente:</h2>
+            <div class="row">
+                {% for movie in last_movies %}
+                <div class="cartas col-md-4 mb-4">
+                    <div class="card-movie h-100">
+                        <img src="{{ movie.poster }}" class="card-img-top" alt="{{ movie.title }}">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title constant-title">{{ movie.title }} ({{ movie.year }})</h5>
+                            {% comment %} <a href="{% url 'detail' slug=movie.slug %}" class="btn btn-primary mt-auto constant-button">Ver más</a> {% endcomment %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

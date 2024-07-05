@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Búsqueda - ReviewFlix{% endblock %}
+
+{% block content %}
+<form action="{% url 'search' %}" method="GET" class="form-group">
+    <input type="text" name="q" placeholder="Buscar película" class="form-control p-4">
+    <button type="submit" class="btn btn-primary">Buscar</button>
+</form>
+    <div class="container mt-5">
+        <h1 class="text-center mb-5">Resultados de la Búsqueda</h1>
+        <p>Se encontraron {{ results| length }} resultados para: <b>{{ query }}</b></p>
+        <ul>
+            {% for movie in results %}
+                <li><a href="{% url 'movie-detail' pk=movie.pk%}">{{ movie.title }} ({{ movie.year }})</li>
+            {% empty %}
+                <li>No se encontraron resultados.</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

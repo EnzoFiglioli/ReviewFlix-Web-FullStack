@@ -1,0 +1,24 @@
+<!-- rate_movie.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Rate {{ movie.title }} - ReviewFlix{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="mb-4">Rate {{ movie.title }}</h1>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary mt-3">Submit Rating</button>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light mt-4 p-3">
+                <h4 class="mb-3">Average Rating</h4>
+                <p class="lead">{{ movie.average_rating }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
