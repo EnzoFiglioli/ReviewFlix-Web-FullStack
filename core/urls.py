@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import home, search, contacto, movies, get_movie_edit, movie_detail, login, add_movie, delete_movie, usuarios, mi_perfil, logout, all_movies, rate_movie
 from .views import add_commentary
+from .views import register
 urlpatterns = [
     path('', home, name="home"),
     path('search/', search, name="search"),
@@ -10,6 +11,7 @@ urlpatterns = [
     path('movie/<slug:slug>/',movie_detail, name="detail"),
     path('movie/<slug:slug>/add-commentary/', add_commentary, name="detail-commentary"),
     path('login/', login, name="login"),
+    path('register/', register, name="register"),
     path('movie/add', add_movie, name="add_movie"),
     path('movie/delete/', delete_movie, name="delete_movie"),
     path('users/all', usuarios, name="usuarios"),

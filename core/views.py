@@ -1,30 +1,45 @@
 from django.shortcuts import render, get_object_or_404, redirect,HttpResponse
 from django.http import request, HttpRequest
 from .models import Movie, User, Rating, Comment
-from .forms import MovieForm, LoginForm,RatingForm,CommentForm
+from .forms import MovieForm, LoginForm,RatingForm,CommentForm, RegisterForm, SearchForm
 from django.contrib import messages
 
 def home(request):
-    # try:
-        # latest_movies = Movie.objects.all().order_by('-title')[:5]
-        # if not latest_movies:
-            # raise Movie.DoesNotExist
-    # except Movie.DoesNotExist:
-        # return HttpResponse({"message": "Error al recibir las ultimas 5 pelis"}, status=404)
-    
-    # context = {"last_movies": latest_movies}
     perfil = request.session.get("user",None)
-    if perfil:
-        context = {"perfil":perfil}
+    last_movies = Movie.objects.order_by('-created_at')[:5]
+    if last_movies is not None or last_movies is not None:
+        context = {"perfil":perfil, 'last_movies':last_movies}
         return render(request, 'home.html',context)
     else:
         return render(request, 'home.html')
 
 def search(request):
-    usuarios = request.session.get("user",None)
-    query = request.GET.get("title")
-    # if request.metho
-    return render(request, 'search.html',{"perfil":usuarios})
+    form = SearchForm(request.GET or None)
+    usuarios = request.session.get("user", None)
+    query = request.GET.get("title", "")
+
+    # Filtrar películas basadas en el título
+    movies = Movie.objects.filter(title__icontains=query) if query else Movie.objects.none()
+
+    # Verificar si hay películas en el QuerySet y si el formulario es válido
+    if form.is_valid() or movies.exists():
+        context = {
+            "usuarios": usuarios,
+            "results": movies,  # Usar 'results' para los resultados en la plantilla
+            "query": query,
+            "form": form
+        }
+        return render(request, 'search.html', context)
+    else:
+        messages.error(request, "No se encontraron películas con ese nombre.")
+
+    # Renderizar la página con el formulario si no se encontraron películas
+    context = {
+        'perfil': usuarios,
+        'form': form
+    }
+    return render(request, 'search.html', context)
+
 
 def movies(request):
     movies = Movie.objects.all()
@@ -53,30 +68,35 @@ def movie_detail(request, slug):
     perfil = request.session.get("user", None)
     movie = get_object_or_404(Movie, slug=slug)
     comentarios = Comment.objects.filter(movie=movie)
+    rate_count = Rating.objects.filter(movie=movie).values('user').distinct().count()
     form = RatingForm(request.POST or None)
+    
     if request.method == "POST" and perfil:
         if form.is_valid():
             rating = form.save(commit=False)
             rating.movie = movie
-            
-            # Obtener la instancia del usuario a partir del diccionario de la sesión
             user_instance = User.objects.get(id=perfil['id'])
             rating.user = user_instance
             
-            rating.save()
-            messages.success(request, "Your rating has been submitted successfully!")
-            return redirect("/movie/<slug:slug>/")
+            if Rating.objects.filter(user=user_instance, movie=movie).exists():
+                messages.error(request, "Ya has puntuado esta película.")
+            else:
+                rating.save()
+                messages.success(request, "Tu puntuación ha sido enviada correctamente.")
+            return redirect("detail", slug=slug)
         else:
-            messages.error(request, "There was an error with your rating. Please try again.")
+            messages.error(request, "Hubo un error con tu puntuación. Por favor, inténtalo de nuevo.")
     
     context = {
         "perfil": perfil,
         "movie": movie,
         "form": form,
-        "comentarios":comentarios
+        "comentarios": comentarios,
+        "rate_count": rate_count,
     }
     
     return render(request, 'movie_detail.html', context)
+
 
 # Agregar una nueva pelicula
 def add_movie(request):
@@ -117,6 +137,19 @@ def login(request):
     else:
         form = LoginForm()
         return render(request,'login.html',{"form":form})
+
+# Registro de usuario
+def register(request):
+    form = RegisterForm()
+    context = {'form':form}
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/login')
+        else:
+            return render(request,'register.html',context)
+    return render(request,'register.html',context)
 
 def usuarios(request):
     users = User.objects.all().values()
@@ -175,29 +208,32 @@ def rate_movie(request, movie_id):
 def all_movies(request):
     movies = Movie.objects.all().values()
     return HttpResponse(movies)
-
 def add_commentary(request, slug):
     usuario = request.session.get("user", None)
     movie = get_object_or_404(Movie, slug=slug)
+    
     if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():
-            # Guarda el comentario asociándolo con la película y el usuario actual
-            comment = form.save(commit=False)
-            comment.movie = movie
-            # Obtiene el usuario de la sesión actual
-            user_instance = User.objects.get(id=usuario['id'])  # Asegúrate de que 'id' exista en tu sesión
-            comment.user = user_instance
-            comment.save()
+            user_instance = User.objects.get(id=usuario['id'])
+            # Verificar si el usuario ya ha dejado un comentario para esta película
+            if Comment.objects.filter(user=user_instance, movie=movie).exists():
+                messages.error(request, "Ya has dejado un comentario para esta película.")
+            else:
+                comment = form.save(commit=False)
+                comment.movie = movie
+                comment.user = user_instance
+                comment.save()
+                messages.success(request, "Tu comentario ha sido enviado correctamente.")
             return redirect('detail', slug=movie.slug)
         else:
-            return HttpResponse("El formulario no es válido")
-    else:
-        form = CommentForm()
+            messages.error(request, "Hubo un error con tu comentario. Por favor, inténtalo de nuevo.")
     
+    form = CommentForm()
     context = {
         "form": form,
         "movie": movie,
-        "perfil": usuario
+        "perfil": usuario,
     }
+    
     return render(request, "movie_detail.html", context)

@@ -1,26 +1,29 @@
 <footer class="bg-dark text-white text-center py-4">
-        <div class="container">
-            <p class="text-white mb-0">Realizado por Enzo Figlioli - 2023</p>
-            <div class="row justify-content-center">
-                <div class="col-md-4">
-                    <p class="text-white mb-0">Nuestras Redes Sociales:</p>
-                </div>
-                <div>
-                    <ul class="list-inline social-media-icons mb-0">
-                        <li class="list-inline-item">
-                            <a href="Twitter" class="nav-link" target="_blank"><i class="fab fa-twitter"></i></a>
-                        </li>
-                        <li class="list-inline-item">
-                            <a href="https://www.facebook.com" target="_blank" class="nav-link"><i class="fab fa-facebook"></i></a>
-                        </li>
-                        <li class="list-inline-item">
-                            <a href="https://www.instagram.com" target="_blank" class="nav-link"><i class="fab fa-instagram"></i></a>
-                        </li>
-                        <li><a href="{% url 'contacto' %}">Contactame</li>
-                        <li><a href="{% url 'add_movie' %}">Agregar Pelicula</li>
-                        <li><a href="{% url 'delete_movie' %}">Eliminar Pelicula</li>    
-                    </ul>
-                </div>
+    <div class="container">
+        <p class="text-white mb-0">Realizado por Enzo Figlioli - 2023</p>
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <ul class="list-inline social-media-icons mb-0">
+                    <li class="list-inline-item">
+                        <a href="https://twitter.com" target="_blank" class="text-white"><i class="fab fa-twitter"></i></a>
+                    </li>
+                    <li class="list-inline-item">
+                        <a href="https://www.facebook.com" target="_blank" class="text-white"><i class="fab fa-facebook"></i></a>
+                    </li>
+                    <li class="list-inline-item">
+                        <a href="https://www.instagram.com" target="_blank" class="text-white"><i class="fab fa-instagram"></i></a>
+                    </li>
+                </ul>
             </div>
         </div>
-    </footer>
+        <div class="mt-3">
+            {% if perfil %}
+            <h5 class="text-white">Como usuario puedes:</h5>
+            <ul class="list-unstyled">
+                <li><a href="{% url 'add_movie' %}" class="text-white">Agregar Película</a></li>
+                <li><a href="{% url 'delete_movie' %}" class="text-white">Eliminar Película</a></li>
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+</footer>

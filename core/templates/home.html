@@ -15,12 +15,13 @@
             <h2>Películas agregadas recientemente:</h2>
             <div class="row">
                 {% for movie in last_movies %}
-                <div class="cartas col-md-4 mb-4">
+                <div class="col-md-3 mb-3">
                     <div class="card-movie h-100">
-                        <img src="{{ movie.poster }}" class="card-img-top" alt="{{ movie.title }}">
+                        <a href="{% url 'detail' slug=movie.slug %}">
+                            <img src="{{ movie.poster }}" class="card-img-top" alt="{{ movie.title }}">
+                        </a>
                         <div class="card-body d-flex flex-column">
-                            <h5 class="card-title constant-title">{{ movie.title }} ({{ movie.year }})</h5>
-                            {% comment %} <a href="{% url 'detail' slug=movie.slug %}" class="btn btn-primary mt-auto constant-button">Ver más</a> {% endcomment %}
+                            <h5 class="card-title constant-title"><a href="{% url 'detail' slug=movie.slug %}" class="text-decoration-none">{{ movie.title }} ({{ movie.year }})</a></h5>
                         </div>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Iniciar Sesión - ReviewFlix{% endblock %}
+{% block title %}Crear una cuenta - ReviewFlix{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
@@ -7,7 +7,7 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header text-center">
-                    <h2>Iniciar Sesión</h2>
+                    <h2>Crear cuenta</h2>
                 </div>
                 <div class="card-body">
                     <form method="post">
@@ -18,7 +18,6 @@
                         <div class="form-group text-center">
                             <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
                         </div>
-                        <p>No tienes una cuenta? Registrate gratis <a href="/register">acá</a>.</p>
                     </form>
                     {% if form.errors %}
                     <div class="alert alert-danger mt-3">

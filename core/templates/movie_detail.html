@@ -1,8 +1,20 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block title %}{{ movie.title }} - ReviewFlix{% endblock %}
 
 {% block content %}
+<div class="container py-5">
+    {% if messages %}
+        <div class="alert-messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 <div class="container py-5">
     <div class="row">
         <div class="col-md-6">
@@ -14,57 +26,61 @@
             <ul class="list-unstyled">
                 <li><b>Duración:</b> {{ movie.duration }} minutos</li>
                 <li><b>Director:</b> {{ movie.director }}</li>
-                <li><h3 class="display-5 mt-3"><b>Puntaje:</b><i class="fa-regular fa-star"></i> {{ movie.average_rating }}</h3></li>
+                <li><h3 class="display-5 mt-3"><b>Puntaje:</b><i class="fa-regular fa-star"></i> {{ movie.average_rating|floatformat:1 }}</h3></li>
+                <p class="text-muted">Cantidad de usuarios que votaron: {{ rate_count }}</p>
                 <div class="container my-4">
                     <div class="row">
                         <div class="col-md-12">
-                            
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ratingModal">
-                                Puntuar pelicula
+                            <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#ratingModal">
+                                Puntuar película
                             </button>
                         </div>
                     </div>
                 </div>
-                
-            <!-- Modal -->
-            <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                    <h5 class="modal-title" id="ratingModalLabel">Puntuar {{ movie.title }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <button type="submit" class="btn btn-primary mt-3">Submit Rating</button>
-                    </form>
-                    </div>
-                </div>
-                </div>
-            </div>
-  
             </ul>
         </div>
     </div>
 </div>
 
-<h2 class="display-5"><b>Comentarios:</b></h2>
+<!-- Modal -->
+<div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ratingModalLabel">Puntuar {{ movie.title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary mt-3">Enviar Puntaje</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="display-5 mt-5 text-center"><b>Comentarios:</b></h2>
 <div class="container">
     {% for comentario in comentarios %}
-    <div class="card my-3">
-        <div class="card-body">
-            <h4 class="card-title">{{ comentario.user }}</h4>
-            <p class="card-text">{{ comentario.commentary }}</p>
+    <div class="card my-3 p-3">
+        <div class="card-body d-flex align-items-center">
+            <img src="{{ perfil.image }}" alt="{{ perfil.username }}" class="rounded-circle m-3" style="width: 50px; height: 50px; object-fit: cover;">
+            <div class="ml-3">
+                <h5 class="card-title mb-0">{{ comentario.user }} <small class="text-muted">{{ comentario.created_at }}</small></h5>
+                <p class="card-text">{{ comentario.commentary }}</p>
+            </div>
         </div>
     </div>
     {% empty %}
-    <p>No hay comentarios aún.</p>
+    <div class="alert alert-info mt-3" role="alert">
+        No hay comentarios aún.
+    </div>
     {% endfor %}
 </div>
 
-<h2 class="display-5"><b>Coméntanos qué te pareció:</b></h2>
+<h2 class="display-5 mt-5 text-center"><b>¿Qué opinas?</b></h2>
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -72,11 +88,11 @@
                 {% csrf_token %}
                 <div class="mb-3">
                     <input type="hidden" id="username" name="username" value="{{ perfil.username }}">
-                    <textarea id="commentary" name="commentary" class="form-control" rows="4" cols="50"></textarea>
+                    <textarea id="commentary" name="commentary" class="form-control" rows="4" placeholder="¡Comparte tu opinión!" required></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">Comentar</button>
             </form>
         </div>
     </div>
 </div>
-{% endblock%}
+{% endblock %}
