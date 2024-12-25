@@ -1,0 +1,14 @@
+{
+    "builds": [
+      {
+        "src": "ReviewFlix/wsgi.py",
+        "use": "@vercel/python"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "ReviewFlix/wsgi.py"
+      }
+    ]
+  }
