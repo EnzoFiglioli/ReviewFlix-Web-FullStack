@@ -8,4 +8,4 @@ python manage.py migrate
 
 En la configuración de Render, donde dice **"Start Command"**, poné:
 ```
-gunicorn reviewflix.wsgi:application
+gunicorn Reviewflix.wsgi:application
